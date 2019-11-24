@@ -28,8 +28,8 @@ def detection(monPerso, map): # key detection
     speed = 1
     x = [monPerso.coor[0] - (monPerso.size[0] / 2), monPerso.coor[0] + (monPerso.size[0] / 2)]
     y = [monPerso.coor[1] - (monPerso.size[1] / 2), monPerso.coor[1] + (monPerso.size[1] / 2)]
-
-    if pygame.key.get_pressed()[pygame.K_DOWN] == 1:
+    key = pygame.key.get_pressed()
+    if key[pygame.K_DOWN] == 1:
         monPerso.dir = 2
         tmpx, tmpy = int((monPerso.coor[0]) // hw), int((monPerso.coor[1]) // hh) + 1
         tmp = [ [(tmpx - 1) * hh, tmpx * hh - 1], [tmpx * hh, (tmpx + 1) * hh - 1], [(tmpx + 1) * hh, (tmpx + 2) * hh - 1] ]
@@ -39,7 +39,7 @@ def detection(monPerso, map): # key detection
             and not (x[1] > tmp[2][0] and x[0] < tmp[2][1] and y[1] >= z and map[tmpy][tmpx + 1] > 0)):
             monPerso.coor[1] += speed
 
-    if pygame.key.get_pressed()[pygame.K_UP] == 1:
+    if key[pygame.K_UP] == 1:
 
         monPerso.dir = 0
         tmpx, tmpy = int((monPerso.coor[0]) // hw), int((monPerso.coor[1]) // hh)
@@ -50,7 +50,7 @@ def detection(monPerso, map): # key detection
             and not (x[1] > tmp[2][0] and x[0] < tmp[2][1] and y[0] <= z and map[tmpy - 1][tmpx + 1] > 0)):
             monPerso.coor[1] -= speed
 
-    if pygame.key.get_pressed()[pygame.K_RIGHT] == 1:
+    if key[pygame.K_RIGHT] == 1:
 
         monPerso.dir = 3
         tmpx, tmpy = int((monPerso.coor[0]) // hw), int((monPerso.coor[1]) // hh)
@@ -61,7 +61,7 @@ def detection(monPerso, map): # key detection
             and not (y[1] > tmp[2][0] and y[0] < tmp[2][1] and x[1] >= z and map[tmpy + 1][tmpx + 1] > 0)):
             monPerso.coor[0] += speed
 
-    if pygame.key.get_pressed()[pygame.K_LEFT] == 1:
+    if key[pygame.K_LEFT] == 1:
 
         monPerso.dir = 1
         tmpx, tmpy = int((monPerso.coor[0]) // hw), int((monPerso.coor[1]) // hh)
@@ -111,8 +111,9 @@ pygame.display.set_caption("Prison Break")
 size_perso = w, h = 31, 48
 x, y = 16, 526
 it = 0
+move = False
 # Loading image
-image = pygame.image.load("Perso_test.png")
+image = pygame.image.load("C:\\Users\\timco\\GithubSync\\Prison-Break\\Perso_test.png")
 heroPic = pygame.Surface(size_perso)
 
 pygame.mouse.set_visible(False)
@@ -120,7 +121,7 @@ monPerso = Perso()
 
 secondPos = [int((monPerso.coor[0]) // (hw * 2)), int((monPerso.coor[1]) // (hh * 2))]
 movement = time.time()
-animation = 0
+animation = time.time()
 while 1:
     screen.fill(black)
     draw_map(screen, map)
@@ -128,17 +129,27 @@ while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
         if event.type == pygame.KEYDOWN:
-            if(event.key in [pygame.K_DOWN, pygame.K_UP, pygame.K_RIGHT, pygame.K_LEFT]): print("Moving")
+            if(event.key in [pygame.K_DOWN, pygame.K_UP, pygame.K_RIGHT, pygame.K_LEFT]): move = True
             if event.key == pygame.K_ESCAPE: # Detection to close the window
                 sys.exit()
 
-    if time.time() - movement > 0.003:
+    if time.time() - movement > 0.004:
         detection(monPerso, map)
         movement = time.time()
+
+    if move == True:
+        if (time.time() - animation) > 0.07:
+            key = pygame.key.get_pressed()
+            if (key[pygame.K_DOWN] or key[pygame.K_UP] or key[pygame.K_LEFT] or key[pygame.K_RIGHT]):
+                it += 1
+                animation = time.time()
+                if it > 8 : it = 0
+            else: move, it = False, 0
 
     #pygame.draw.rect(screen, (0, 0, 240), monPerso.rect)
     x, y = 16 + (it * 64), 526 + (monPerso.dir * 64)
     heroPic.fill(black)
+    heroPic.set_colorkey(black)
     heroPic.blit(image, (0, 0), (x, y, w, h))
-    screen.blit(heroPic, (monPerso.rect[0], monPerso.rect[1] - 8))
+    screen.blit(heroPic, (monPerso.rect[0], monPerso.rect[1] - (heroPic.get_size()[1] - monPerso.size[1])))
     pygame.display.flip()
