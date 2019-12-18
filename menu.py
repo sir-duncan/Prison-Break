@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-def test():
-    print("Test nouveau fichier")
-=======
-def test():
-    print("Test nouveau fichier")
->>>>>>> 46f404952c75295e74d47c5caf2370b1a56eca05
+import pygame
+
+class Inventory:
+    def show(self, screen, size, elements):
+        back = pygame.Rect((size[0] // 10, size[1] // 10), (size[0] * 8 // 10, size[1] * 8 // 10))
+        pygame.draw.rect(screen, pygame.Color(0, 0, 200, 50), back)
