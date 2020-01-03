@@ -6,13 +6,6 @@ from menu import *
 
 blockSize = (48, 48)
 
-class Button():
-    def __init__(self, elm):
-        self.elm = elm
-    def update(self, x, y, w, h):
-        self.x, self.y = x, y
-        self.w, self.h = w, h
-
 class Perso():
     def __init__(self):
         self.dir = 2 # N:0  E:1  S:2  O:3
@@ -87,51 +80,6 @@ def detection(monPerso, map): # key detection
     elif not key[pygame.K_ESCAPE]: iPressed = False
 
     monPerso.update()
-
-def invertoryMenu(screen, size, elements):
-    global iPressed
-    taille, elem = 60, list()
-    white, dark = (250, 250, 250), (60, 60, 60)
-    titleFont = pygame.font.SysFont('Comic Sans MS', 50)
-    statusFont, status = pygame.font.SysFont('Comic Sans MS', 30), ""
-    title = (statusFont.render("Objet", False, dark), statusFont.render("Acces Rapide", False, dark), statusFont.render("Description", False, dark))
-    old = screen.copy()
-    back = Button(pygame.Surface((size[0] * 7 // 10, size[1] * 7 // 10), pygame.SRCALPHA))
-    back.update(size[0] * 5 // 10 - (size[0] * 7 // 20), size[1] * 5 // 10 - (size[1] * 7 // 20), size[0] * 7 // 10, size[1] * 7 // 10)
-    mainTitle = Button(titleFont.render("INVENTAIRE", False, white))
-    mainTitle.update(size[0] * 5 // 10 - (mainTitle.elm.get_width() / 2), back.y + (back.h * 7 // 100), mainTitle.elm.get_width(), mainTitle.elm.get_height())
-    for i in range(20):
-        elem.append(pygame.Rect((i % 5) * (back.w * 2 // 100) + ((i % 5) * taille) + (back.x + (back.w * 6 // 100)), (i // 5) * (back.h * 3 // 100) + ((i // 5) * taille) + (back.y + (back.h * 40 // 100)), taille, taille))
-    hand = pygame.Rect(size[0] / 2, size[1] / 2, taille, taille)
-    back.elm.fill((0, 0, 0, 190))
-    pygame.mouse.set_visible(True)
-    while True:
-        for event in pygame.event.get():
-            #if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE or event.key == pygame.K_i:
-                    monPerso.state = "AFK"
-                    pygame.mouse.set_visible(False)
-                    iPressed = True
-                    return
-        m_pos = pygame.mouse.get_pos()
-        for cell in elem:
-            if m_pos[0] > cell.x and m_pos[0] < cell.x + cell.w and m_pos[1] > cell.y and m_pos[1] < cell.y + cell.h:
-                status = statusFont.render("Cellule Vide", False, white)
-                break
-        else: status = statusFont.render("Seléctionnez un objet", False, white)
-        screen.blit(old, (0, 0))
-        screen.blit(back.elm, (back.x, back.y)) # put in the center
-        screen.blit(mainTitle.elm, (mainTitle.x, mainTitle.y))
-        screen.blit(title[0], (back.x + back.w * 19 // 100, back.y + back.h * 26 // 100))
-        screen.blit(title[1], (back.x + back.w * 46 // 100, back.y + back.h * 26 // 100))
-        screen.blit(title[2], (back.x + back.w * 70 // 100, back.y + back.h * 26 // 100))
-        screen.blit(status, (back.x + (back.w * 70 // 100), size[1] * 5 // 10))
-        pygame.draw.rect(screen, (0, 0, 0), hand)
-        for rect in elem: pygame.draw.rect(screen, (0, 0, 0), rect)
-        pygame.draw.rect(screen, dark, pygame.Rect(back.x + back.w * 43 // 100, back.y + back.h * 35 // 100, 2, back.h * 55 // 100))
-        pygame.draw.rect(screen, dark, pygame.Rect(back.x + back.w * 62 // 100, back.y + back.h * 35 // 100, 2, back.h * 55 // 100))
-        pygame.display.flip()
 
 pygame.init() # Program initiats
 size = width, height = 1920, 1080#1500, 700
@@ -211,6 +159,6 @@ while 1:
     heroPic.blit(image, (0, 0), (x, y, w, h))
     screen.blit(heroPic, (monPerso.rect[0], monPerso.rect[1] - (heroPic.get_size()[1] - monPerso.size[1])))
     pygame.transform.scale(screen, (width, height), screen)
-    if monPerso.state == "Inventory": invertoryMenu(screen, size, monPerso)
+    if monPerso.state == "Inventory": iPressed = invertoryMenu(screen, size, monPerso)
     if monPerso.state == "Pause": pauseMenu(screen, size, monPerso)
     pygame.display.flip()
