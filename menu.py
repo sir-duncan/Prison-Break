@@ -23,7 +23,7 @@ def draw_map(screen, map, blockSize):
 
 def invertoryMenu(screen, size, monPerso):
     taille, elem = 60, list()
-    white, dark = (250, 250, 250), (60, 60, 60)
+    white, dark = (250, 250, 250), (80, 80, 80)
     titleFont = pygame.font.SysFont('Comic Sans MS', 50)
     statusFont, status = pygame.font.SysFont('Comic Sans MS', 30), ""
     title = (statusFont.render("Objet", False, dark), statusFont.render("Acces Rapide", False, dark), statusFont.render("Description", False, dark))
