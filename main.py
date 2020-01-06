@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import pygame
+import ctypes
 from menu import *
 
 blockSize = (48, 48)
@@ -17,17 +18,16 @@ class Perso():
     def update(self):
         self.rect = pygame.Rect(self.coor[0] - (self.size[0] / 2), self.coor[1] - (self.size[1] / 2), self.size[0], self.size[1])
 
+os.environ['SDL_VIDEO_CENTERED'] = '0, 10'
 pygame.init() # Program initiats
-size = width, height = 1920, 1080#1500, 700
-<<<<<<< HEAD
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 60)
-screen = pygame.display.set_mode(size)#, pygame.FULLSCREEN)
-=======
-#infoObject = pygame.display.Info()
-#pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
->>>>>>> fab3b18eb77d46baa8ed342b1227217b11853b4c
+infoObject = pygame.display.Info()
+ctypes.windll.user32.SetProcessDPIAware()
+true_res = (ctypes.windll.user32.GetSystemMetrics(0), ctypes.windll.user32.GetSystemMetrics(1))
+print(true_res)#infoObject.current_w)
+screen = pygame.display.set_mode(true_res, pygame.FULLSCREEN)
+#screen = pygame.display.set_mode((0, 0))
+size = width, height = screen.get_width(), screen.get_height()#1920, 1080#1500, 700
+print("size =", size)
 pygame.font.init()
 pygame.mouse.set_visible(False)
 
