@@ -83,7 +83,7 @@ def detection(monPerso, map): # key detection
 
 pygame.init() # Program initiats
 size = width, height = 1920, 1080#1500, 700
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 60)
 screen = pygame.display.set_mode(size)#, pygame.FULLSCREEN)
 pygame.font.init()
 pygame.mouse.set_visible(False)

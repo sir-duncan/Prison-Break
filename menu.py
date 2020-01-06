@@ -35,7 +35,7 @@ def invertoryMenu(screen, size, monPerso):
     for i in range(20):
         elem.append(pygame.Rect((i % 5) * (back.w * 2 // 100) + ((i % 5) * taille) + (back.x + (back.w * 6 // 100)), (i // 5) * (back.h * 3 // 100) + ((i // 5) * taille) + (back.y + (back.h * 40 // 100)), taille, taille))
     hand = pygame.Rect(size[0] / 2, size[1] / 2, taille, taille)
-    back.elm.fill((0, 0, 0, 190))
+    back.elm.fill((150, 0, 0, 190))
     pygame.mouse.set_visible(True)
     while True:
         for event in pygame.event.get():
