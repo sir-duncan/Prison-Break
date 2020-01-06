@@ -7,18 +7,19 @@ from menu import *
 
 blockSize = (48, 48)
 
+
 class Perso():
-    def __init__(self, pos):
+    def __init__(self, pos, name):
         self.it = 0
         self.dir = 2 # N:0  E:1  S:2  O:3
         self.size = [30, 40]
         self.coor = [pos[0], pos[1]] # life etc...
+        self.name = name
         self.state = "AFK"
         self.rect = pygame.Rect(self.coor[0] - (self.size[0] / 2), self.coor[1] - (self.size[1] / 2), self.size[0], self.size[1])
     def update(self):
         self.rect = pygame.Rect(self.coor[0] - (self.size[0] / 2), self.coor[1] - (self.size[1] / 2), self.size[0], self.size[1])
 
-os.environ['SDL_VIDEO_CENTERED'] = '0, 10'
 pygame.init() # Program initiats
 infoObject = pygame.display.Info()
 ctypes.windll.user32.SetProcessDPIAware()
@@ -65,8 +66,8 @@ color = (0, 0, 240)
 background = pygame.Surface(size)
 draw_map(background, map, blockSize)
 
-monPerso = Perso((120, 120))
-pnj = (Perso((500, 120)), Perso((700, 120)))
+monPerso = Perso((120, 120), "Tim")
+pnj = (Perso((500, 120), "John"), Perso((700, 120), "Jerome"))
 pnj[1].state = "Moving"
 iPressed = False
 
@@ -83,7 +84,8 @@ while True:
 
     if time.time() - movement > 0.004:
         updatePnj(pnj[1])
-        iPressed = detection(monPerso, map, blockSize, movingKey, iPressed)
+        if monPerso.state is not "Speaking":
+            iPressed = detection(monPerso, map, blockSize, movingKey, iPressed)
         movement = time.time()
 
     if (time.time() - timerAnimation) > 0.07:
@@ -97,6 +99,9 @@ while True:
             else: monPerso.state, monPerso.it = "AFK", 0
 
     #pygame.draw.rect(screen, (0, 0, 240), monPerso.rect)
+    if monPerso.state is not "Speaking":
+        speak = playerDetection(screen, monPerso, pnj)
+
     for dumb in pnj:
         if monPerso.rect.x < dumb.rect.x + dumb.rect.width and monPerso.rect.x + monPerso.rect.width > dumb.rect.x and monPerso.rect.y < dumb.rect.y + dumb.rect.height and monPerso.rect.y + monPerso.rect.height > dumb.rect.y:
             #display lower y first -> collision with dumb
@@ -114,6 +119,9 @@ while True:
         color = (0, 0, 240)
         screen = displayPerso(monPerso, screen, image, heroPic, size_perso, color)
         for dumb in pnj: displayPerso(dumb, screen, image, heroPic, size_perso, color)
+    if monPerso.state is "Speaking":
+        pygame.draw.rect(screen, white, monPerso.rect)
+        if pygame.mouse.get_pressed()[0]: monPerso.state = "AFK"
     #pygame.transform.scale(screen, (width, height), screen)
     if monPerso.state == "Inventory": iPressed = invertoryMenu(screen, size, monPerso)
     if monPerso.state == "Pause": pauseMenu(screen, size, monPerso)

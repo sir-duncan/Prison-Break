@@ -43,6 +43,40 @@ def draw_map(screen, map, blockSize):
                 screen.blit(ground, (idx * hw, idy * hh), (0, 0, hw, hh))
                 #pygame.draw.rect(screen, (10, 50, 10), ((idx * hw), (idy * hh), hw, hh))
 
+def playerDetection(screen, monPerso, pnj):
+    distance, taille = 35, 15
+    color = (0, 150, 0)
+    nameFont = pygame.font.SysFont('Comic Sans MS', 15)
+    pseudo = None
+    for idx, dumb in enumerate(pnj):
+        if monPerso.dir == 0:
+            if  monPerso.coor[0] - (taille // 2) < dumb.rect.x + dumb.rect.width and monPerso.coor[0] + (taille // 2) > dumb.rect.x  and monPerso.coor[1] - distance - (taille // 2) < dumb.rect.y + dumb.rect.height and monPerso.coor[1] - distance + (taille // 2) > dumb.rect.y:
+                pseudo = nameFont.render(dumb.name, False, (0, 0, 150))
+                screen.blit(pseudo, (dumb.coor[0] - (pseudo.get_width() // 2), dumb.coor[1] - distance - taille))
+                #pygame.draw.rect(screen, color, pygame.Rect((monPerso.coor[0] - (taille // 2), monPerso.coor[1] - distance - (taille // 2)), (taille, taille)))
+        elif monPerso.dir == 1:
+            if monPerso.coor[0] - distance - (taille // 2) < dumb.rect.x + dumb.rect.width and monPerso.coor[0] - distance + (taille // 2) > dumb.rect.x and monPerso.coor[1] - (taille // 2) < dumb.rect.y + dumb.rect.height and monPerso.coor[1] + (taille // 2) > dumb.rect.y:
+                pseudo = nameFont.render(dumb.name, False, (0, 0, 150))
+                screen.blit(pseudo, (dumb.coor[0] - (pseudo.get_width() // 2), dumb.coor[1] - distance - taille))
+                #pygame.draw.rect(screen, color, pygame.Rect((monPerso.coor[0] - distance - (taille // 2), monPerso.coor[1] - (taille // 2)), (taille, taille)))
+        elif monPerso.dir == 2:
+            if monPerso.coor[0] - (taille // 2) < dumb.rect.x + dumb.rect.width and monPerso.coor[0] + (taille // 2) > dumb.rect.x and monPerso.coor[1] + distance - (taille // 2) < dumb.rect.y + dumb.rect.height and monPerso.coor[1] + distance + (taille // 2) > dumb.rect.y:
+                pseudo = nameFont.render(dumb.name, False, (0, 0, 150))
+                screen.blit(pseudo, (dumb.coor[0] - (pseudo.get_width() // 2), dumb.coor[1] - distance - taille))
+                #pygame.draw.rect(screen, (200, 0, 0), pygame.Rect((monPerso.coor[0] - (taille // 2), monPerso.coor[1] + distance - (taille // 2)), (taille, taille)))
+        elif monPerso.dir == 3:
+            if monPerso.coor[0] + distance - (taille // 2) < dumb.rect.x + dumb.rect.width and monPerso.coor[0] + distance + (taille // 2) > dumb.rect.x and monPerso.coor[1] - (taille // 2) < dumb.rect.y + dumb.rect.height and monPerso.coor[1] + (taille // 2) > dumb.rect.y:
+                pseudo = nameFont.render(dumb.name, False, (0, 0, 150))
+                screen.blit(pseudo, (dumb.coor[0] - (pseudo.get_width() // 2), dumb.coor[1] - distance - taille))
+                #pygame.draw.rect(screen, (200, 0, 0), pygame.Rect((monPerso.coor[0] + distance - (taille // 2), monPerso.coor[1] - (taille // 2)), (taille, taille)))
+        else: color = (0, 0, 200)
+        if pseudo is not None:
+            if pygame.key.get_pressed()[pygame.K_e]:
+                monPerso.state = "Speaking"
+                return idx
+                #pygame.draw.rect(screen, color, pygame.Rect((monPerso.coor[0] - (taille // 2), monPerso.coor[1] - (taille // 2)), (taille, taille)))
+    return -1
+
 def mainMenu(screen, size):
     pygame.mouse.set_visible(True)
     white = (240, 240, 240)
@@ -189,8 +223,8 @@ def detection(monPerso, map, blockSize, movingKey, iPressed): # key detection
 
 def pauseMenu(screen, size, monPerso):
     global iPressed
-    titleFont = pygame.font.SysFont('.\\Data\\font.ttf', 60)
-    buttonFont = pygame.font.SysFont('.\\Data\\font.ttf', 48)
+    titleFont = pygame.font.SysFont('.\\Data\\font.ttf', 90)
+    buttonFont = pygame.font.SysFont('Comic Sans MS', 40)
     white = (250, 250, 250)
     back = pygame.Surface((size[0] * 5 // 10, size[1] * 4 // 10), pygame.SRCALPHA)
     old = screen.copy()
@@ -198,7 +232,7 @@ def pauseMenu(screen, size, monPerso):
     title = titleFont.render("Pause", False, white)
     resume = buttonFont.render("Reprendre", False, white)
     quit = buttonFont.render("Quitter", False, white)
-    back.fill((155, 5, 5, 190))
+    back.fill((5, 5, 5, 190))
     pygame.mouse.set_visible(True)
     while True:
         for event in pygame.event.get():
