@@ -59,12 +59,14 @@ movingKey = [pygame.K_s, pygame.K_w, pygame.K_d, pygame.K_a]
 size_perso = w, h = 31, 48
 x, y = 16, 526
 move = False
+
 # Loading image
 image = pygame.image.load(".\\Data\\Perso_test.png")
 heroPic = pygame.Surface(size_perso)
 color = (0, 0, 240)
 background = pygame.Surface(size)
 draw_map(background, map, blockSize)
+
 
 monPerso = Perso((120, 120), "Tim")
 pnj = (Perso((500, 120), "John"), Perso((700, 120), "Jerome"))
@@ -73,6 +75,10 @@ iPressed = False
 
 mainMenu(screen, size)
 
+#Loading Font
+timer = time.time()
+font = pygame.font.SysFont('Comic Sans MS', 20)
+message, itMessage = "Salut, toi ! Comment vas ? Moi super", 0
 movement = time.time()
 timerAnimation = time.time()
 while True:
@@ -99,8 +105,8 @@ while True:
             else: monPerso.state, monPerso.it = "AFK", 0
 
     #pygame.draw.rect(screen, (0, 0, 240), monPerso.rect)
-    if monPerso.state is not "Speaking":
-        speak = playerDetection(screen, monPerso, pnj)
+    #if monPerso.state is not "Speaking":
+    speak = playerDetection(screen, monPerso, pnj)
 
     for dumb in pnj:
         if monPerso.rect.x < dumb.rect.x + dumb.rect.width and monPerso.rect.x + monPerso.rect.width > dumb.rect.x and monPerso.rect.y < dumb.rect.y + dumb.rect.height and monPerso.rect.y + monPerso.rect.height > dumb.rect.y:
@@ -120,8 +126,12 @@ while True:
         screen = displayPerso(monPerso, screen, image, heroPic, size_perso, color)
         for dumb in pnj: displayPerso(dumb, screen, image, heroPic, size_perso, color)
     if monPerso.state is "Speaking":
-        pygame.draw.rect(screen, white, monPerso.rect)
-        if pygame.mouse.get_pressed()[0]: monPerso.state = "AFK"
+        pygame.draw.rect(screen, white, pygame.Rect((size[0] // 10, size[1] * 92 // 100), (size[0] * 8 // 10, size[1] * 4 // 100))) #background
+        paint = font.render(message[:itMessage], False, (15, 15, 15))
+        if itMessage < len(message) and time.time() - timer > 0.03: itMessage, timer = itMessage + 1, time.time()
+        screen.blit(paint, ((size[0] // 10) + 20, (size[1] * 92 // 100) + (size[1] * 4 // 200) - (paint.get_height() // 2)))
+        if pygame.mouse.get_pressed()[0]:
+            monPerso.state, itMessage = "AFK", 0
     #pygame.transform.scale(screen, (width, height), screen)
     if monPerso.state == "Inventory": iPressed = invertoryMenu(screen, size, monPerso)
     if monPerso.state == "Pause": pauseMenu(screen, size, monPerso)
