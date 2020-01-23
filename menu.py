@@ -8,6 +8,16 @@ class Button():
         self.x, self.y = x, y
         self.w, self.h = w, h
 
+class Object():
+    def __init__(self, name, description, coord):
+        self.name = name
+        self.description = description
+        self.display = True
+        self.elm = pygame.Rect(coord, (25, 25))
+    def update(self, display, coord):
+        self.display = display
+        self.elm.move(coord)
+
 def updatePnj(dumb):
     if dumb.dir == 2: dumb.coor[1] += 1
     elif dumb.dir == 0: dumb.coor[1] -= 1
@@ -20,12 +30,12 @@ def animatePnj(dumb):
     if dumb.it > 8 : dumb.it = 1 # PNJ animation
     dumb.update()
 
-def displayPerso(perso, screen, image, heroPic, size_perso, color):
+def displayPerso(perso, screen, images, heroPic, size_perso, color):
     black = (0, 0, 0)
     x, y = 16 + (perso.it * 64), 526 + (perso.dir * 64)
     heroPic.fill(black)
     heroPic.set_colorkey(black)
-    heroPic.blit(image, (0, 0), (x, y, size_perso[0], size_perso[1]))
+    heroPic.blit(images[perso.name], (0, 0), (x, y, size_perso[0], size_perso[1]))
     #pygame.draw.rect(screen, color, perso.rect)
     screen.blit(heroPic, (perso.rect[0], perso.rect[1] - (heroPic.get_size()[1] - perso.size[1])))
     return screen
@@ -116,7 +126,7 @@ def mainMenu(screen, size):
 
 def invertoryMenu(screen, size, monPerso):
     taille, elem = 60, list()
-    white, dark = (250, 250, 250), (80, 80, 80)
+    white, dark = (250, 250, 250), (120, 120, 120)
     titleFont = pygame.font.SysFont('.\\Data\\font.ttf', 50)
     statusFont, status = pygame.font.SysFont('Comic Sans MS', 30), ""
     title = (statusFont.render("Objet", False, dark), statusFont.render("Acces Rapide", False, dark), statusFont.render("Description", False, dark))
@@ -138,12 +148,15 @@ def invertoryMenu(screen, size, monPerso):
                     monPerso.state, iPressed = "AFK", True
                     pygame.mouse.set_visible(False)
                     return True
-        m_pos = pygame.mouse.get_pos()
-        for cell in elem:
+
+        m_pos = pygame.mouse.get_pos() # Description
+        for idx, cell in enumerate(elem):
             if m_pos[0] > cell.x and m_pos[0] < cell.x + cell.w and m_pos[1] > cell.y and m_pos[1] < cell.y + cell.h:
-                status = statusFont.render("Cellule Vide", False, white)
+                if not monPerso.pocket or idx >= len(monPerso.pocket): status = statusFont.render("Cellule Vide", False, white)
+                else: status = statusFont.render((monPerso.pocket[idx]).description, False, white)
                 break
         else: status = statusFont.render("Seléctionnez un objet", False, white)
+
         screen.blit(old, (0, 0))
         screen.blit(back.elm, (back.x, back.y)) # put in the center
         screen.blit(mainTitle.elm, (mainTitle.x, mainTitle.y))
@@ -151,8 +164,10 @@ def invertoryMenu(screen, size, monPerso):
         screen.blit(title[1], (back.x + back.w * 46 // 100, back.y + back.h * 26 // 100))
         screen.blit(title[2], (back.x + back.w * 70 // 100, back.y + back.h * 26 // 100))
         screen.blit(status, (back.x + (back.w * 70 // 100), size[1] * 5 // 10))
-        pygame.draw.rect(screen, (0, 0, 0), hand)
-        for rect in elem: pygame.draw.rect(screen, (0, 0, 0), rect)
+        pygame.draw.rect(screen, (0, 0, 0), hand) #
+        for idx, rect in enumerate(elem):
+            if not monPerso.pocket or idx >= len(monPerso.pocket): pygame.draw.rect(screen, (0, 0, 0), rect)
+            else: pygame.draw.rect(screen, (240, 240, 240), rect)
         pygame.draw.rect(screen, dark, pygame.Rect(back.x + back.w * 43 // 100, back.y + back.h * 35 // 100, 2, back.h * 55 // 100))
         pygame.draw.rect(screen, dark, pygame.Rect(back.x + back.w * 62 // 100, back.y + back.h * 35 // 100, 2, back.h * 55 // 100))
         pygame.display.flip()
